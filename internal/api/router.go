@@ -11,5 +11,6 @@ func RouterInit() *chi.Mux {
 
 	webDir := "./web"
 	r.Handle("/*", http.StripPrefix("/", http.FileServer(http.Dir(webDir))))
+	r.Get("/api/nextdate", GetNextDate)
 	return r
 }
