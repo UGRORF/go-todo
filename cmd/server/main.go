@@ -3,7 +3,6 @@ package main
 import (
 	"fmt"
 	"os"
-	"time"
 
 	"github.com/UGRORF/go-todo/internal/api"
 	"github.com/UGRORF/go-todo/pkg/db"
@@ -11,7 +10,6 @@ import (
 )
 
 func main() {
-	fmt.Println(time.Now().Weekday() == 1)
 	if err := godotenv.Load(); err != nil {
 		fmt.Println("No .env file found, using environment variables")
 	}
@@ -25,7 +23,6 @@ func main() {
 
 	port := os.Getenv("TODO_PORT")
 	srv := api.NewServer(port)
-	fmt.Println(port)
 
 	if err := srv.Start(); err != nil {
 		fmt.Printf("Server failed: %v", err)

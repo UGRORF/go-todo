@@ -6,6 +6,8 @@ import (
 	"strconv"
 	"strings"
 	"time"
+
+	"github.com/UGRORF/go-todo/pkg/db"
 )
 
 const (
@@ -40,6 +42,7 @@ func NextDate(now time.Time, dstart string, repeat string) (string, error) {
 		if days < 1 || days > maxDaysForD {
 			return "", errors.New("invalid repeat, must be in range 0-400")
 		}
+
 		return advanceByInterval(date, now, 0, 0, days), nil
 
 	case "y":
@@ -174,4 +177,37 @@ func advanceByInterval(date, now time.Time, years, months, days int) string {
 		date = date.AddDate(years, months, days)
 	}
 	return date.Format(dateFormat)
+}
+
+func CheckDate(task *db.Task) error {
+	now := time.Now()
+
+	if task.Date == "" {
+		task.Date = now.Format(dateFormat)
+		return nil
+	}
+
+	t, err := time.Parse(dateFormat, task.Date)
+	if err != nil {
+		return fmt.Errorf("invalid date format: must be YYYYMMDD")
+	}
+
+	if t.After(now) || t.Format(dateFormat) == now.Format(dateFormat) {
+		return nil
+	}
+
+	if task.Repeat != "" {
+		next, err := NextDate(now, task.Date, task.Repeat)
+		if err != nil {
+			return fmt.Errorf("invalid repeat rule: %w", err)
+		}
+		if next == "" {
+			return fmt.Errorf("failed to calculate next date")
+		}
+		task.Date = next
+		return nil
+	}
+
+	task.Date = now.Format(dateFormat)
+	return nil
 }
