@@ -1,4 +1,6 @@
 # Binary files
+*~
+*.out
 main
 *.exe
 *.exe~
