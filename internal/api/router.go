@@ -12,11 +12,18 @@ func RouterInit() *chi.Mux {
 	webDir := "./web"
 	r.Handle("/*", http.StripPrefix("/", http.FileServer(http.Dir(webDir))))
 	r.Get("/api/nextdate", GetNextDate)
-	r.Post("/api/task", CreateTask)
-	r.Get("/api/tasks", GetTasks)
-	r.Get("/api/task", GetTask)
-	r.Put("/api/task", UpdateTask)
-	r.Post("/api/task/done", DoneTask)
-	r.Delete("/api/task", DeleteTask)
+	r.Post("/api/signin", SinginHandler)
+
+	r.Group(func(r chi.Router) {
+		r.Use(auth)
+
+		r.Post("/api/task", CreateTask)
+		r.Get("/api/tasks", GetTasks)
+		r.Get("/api/task", GetTask)
+		r.Put("/api/task", UpdateTask)
+		r.Post("/api/task/done", DoneTask)
+		r.Delete("/api/task", DeleteTask)
+	})
+
 	return r
 }
