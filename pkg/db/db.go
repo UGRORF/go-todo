@@ -40,3 +40,10 @@ func Init(dbFile string) error {
 
 	return err
 }
+
+func Close() error {
+	if db1 != nil {
+		return db1.Close()
+	}
+	return nil
+}

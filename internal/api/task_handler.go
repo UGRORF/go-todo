@@ -9,6 +9,8 @@ import (
 	"github.com/UGRORF/go-todo/pkg/db"
 )
 
+const taskLimit = 50
+
 type TaskResp struct {
 	Tasks []*db.Task `json:"tasks"`
 }
@@ -20,7 +22,6 @@ func CreateTask(w http.ResponseWriter, r *http.Request) {
 		writeError(w, "Failed to read body", http.StatusBadRequest)
 		return
 	}
-	defer r.Body.Close()
 
 	err = json.Unmarshal(body, &task)
 	if err != nil {
@@ -53,9 +54,9 @@ func GetTasks(w http.ResponseWriter, r *http.Request) {
 	var err error
 	search := r.URL.Query().Get("search")
 	if search == "" {
-		tasks, err = db.Tasks(50)
+		tasks, err = db.Tasks(taskLimit)
 	} else {
-		tasks, err = db.SearchTasks(50, search)
+		tasks, err = db.SearchTasks(taskLimit, search)
 	}
 
 	if err != nil {
@@ -86,7 +87,6 @@ func UpdateTask(w http.ResponseWriter, r *http.Request) {
 		writeError(w, "failed to read body", http.StatusBadRequest)
 		return
 	}
-	defer r.Body.Close()
 
 	var task db.Task
 	err = json.Unmarshal(body, &task)
